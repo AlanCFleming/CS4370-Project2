@@ -137,4 +137,14 @@ int main(int argc, char *argv[]){
 
 	//verify results
 	verify(a,b,c, MATRIXSIZE);
+
+	//free memory
+	free(a);
+	free(b);
+	free(c);
+	cudaFree(dev_a);
+	cudaFree(dev_b);
+	cudaFree(dev_c);
+	//exit program
+	return 0;
 }
