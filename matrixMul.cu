@@ -19,8 +19,8 @@ void mul_matrix_cpu(float *M, float *N, float *P, int width){
 __global__ void mul_matrix_gpu(float *M, float *N, float *P, int width) {
 	//Assuming matrix is width x width
 	//Assuming tile size = blockdim.x
-	__shared__ float ds_M[blockDim.x, blockDim.x];
-	__shared__ float ds_N[blockDim.x, blockDim.x];
+	__shared__ float ds_M[width * width];
+	__shared__ float ds_N[width * width];
 
 	//Calculate row and collumn
 	int row = blockIdx.y * blockDim.x + threadIdx.y;
