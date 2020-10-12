@@ -113,8 +113,8 @@ int main(int argc, char *argv[]){
 	//Set up cuda events for recording runtime
 	cudaEvent_t start,stop;
 	float gpuTime; 
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
+	cudaEventCreate(start);
+	cudaEventCreate(stop);
 	cudaEventRecord(start,0);
 
 	// do some work on the GPU
