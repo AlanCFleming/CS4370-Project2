@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <stdio.h>
+#include <math.h>
+#include <cuda.h>
 //Code written by Alan Fleming
 
 void mul_matrix_cpu(float *M, float *N, float *P, int width){
@@ -42,5 +43,30 @@ __global__ void mul_matrix_gpu(float *M, float *N, float *P, int width) {
 	//Load final product into output memory
 	P[row * width + col] = Pvalue;
 }
+
+bool verify(float *A, float *B, float *C, int width) {
+	//Tolerance to check
+	const float tolerance = 1e-6;
+	for(int i = 0; i < width; ++i){
+		for(int k = 0; k < width; ++k) {
+			float sum = 0;
+			for(int j = 0; j < width; ++j) {
+				sum += A[i * width + j] * B[j * width + k];
+			}
+			
+			//get the absolute value of the error for comparison
+			error = fabs(sum - C[i * width + k])/sum;
+			//Check if error is too large
+			if(error > tolerance) {
+				printf("TEST FAILED\n\n");
+				return false;
+			}
+		}
+	}
+	printf("TEST PASSED\n\n");
+	return true;
+}
+
+
 
 
