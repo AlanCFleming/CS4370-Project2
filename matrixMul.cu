@@ -126,8 +126,8 @@ int main(int argc, char *argv[]){
 	cudaEventElapsedTime(&gpuTime,start,stop);
 
 	//destroy cuda events
-	cudaEventDestroy(&start);
-	cudaEventDestroy(&stop);
+	cudaEventDestroy(start);
+	cudaEventDestroy(stop);
 
 	//copy memory from device
 	cudaMemcpy(c,dev_c, MATRIXSIZE * MATRIXSIZE * sizeof(int),cudaMemcpyDeviceToHost);
