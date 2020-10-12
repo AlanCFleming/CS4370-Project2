@@ -41,7 +41,7 @@ __global__ void mul_matrix_gpu(float *M, float *N, float *P, int width) {
 		
 		//Preform partial multiplications
 		for(int k = 0; k < blockDim.x; ++k) {
-			Pvalue += ds_M[row * width + k] * ds_N[k * width + col];
+			Pvalue += ds_M[threadIdx.y * width + k] * ds_N[k * width + threadIdx.x];
 		}
 		__syncthreads();
 	}
@@ -56,7 +56,7 @@ bool verify(float *A, float *B, float *C, int width) {
 		for(int k = 0; k < width; ++k) {
 			float sum = 0;
 			for(int j = 0; j < width; ++j) {
-				sum += A[i * width + j] * B[j * width + k];
+				sum += A[threadIdx. * width + j] * B[j * width + k];
 			}
 			
 			//get the absolute value of the error for comparison
