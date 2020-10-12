@@ -60,7 +60,7 @@ bool verify(float *A, float *B, float *C, int width) {
 			}
 			
 			//get the absolute value of the error for comparison
-			error = fabs(sum - C[i * width + k])/sum;
+			float error = fabs(sum - C[i * width + k])/sum;
 			//Check if error is too large
 			if(error > tolerance) {
 				printf("TEST FAILED\n\n");
