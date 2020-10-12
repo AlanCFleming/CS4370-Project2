@@ -4,6 +4,10 @@
 #include <cuda.h>
 //Code written by Alan Fleming
 
+//CONSTANTS
+#define MATRIXSIZE 8
+#define BLOCKSIZE 4
+
 void mul_matrix_cpu(float *M, float *N, float *P, int width){
 	for( int i = 0; i<width; i++){
 		for( int j = 0; j<width; j++){
@@ -19,8 +23,8 @@ void mul_matrix_cpu(float *M, float *N, float *P, int width){
 __global__ void mul_matrix_gpu(float *M, float *N, float *P, int width) {
 	//Assuming matrix is width x width
 	//Assuming tile size = blockdim.x
-	__shared__ float ds_M[width * width];
-	__shared__ float ds_N[width * width];
+	__shared__ float ds_M[MATRIXSIZE * MATRIXSIZE];
+	__shared__ float ds_N[MATRIXSIZE * MATRIXSIZE];
 
 	//Calculate row and collumn
 	int row = blockIdx.y * blockDim.x + threadIdx.y;
@@ -69,16 +73,6 @@ bool verify(float *A, float *B, float *C, int width) {
 }
 
 int main(int argc, char *argv[]){
-	//Check number of arguments
-		if(argc <= 2) {
-		printf("Please supply matrix size and block size");
-		return 1;
-	}
-
-	//assign Matrix and block size
-	const int MATRIXSIZE = atoi(argv[1]);
-	const int BLOCKSIZE = atoi(argv[2]);
-
 	//allocate system memory for array
 	float *a = (float *)malloc(sizeof(float) * MATRIXSIZE * MATRIXSIZE );	//first matrix
 	float *b = (float *)malloc(sizeof(float) * MATRIXSIZE * MATRIXSIZE ); //second matrix
