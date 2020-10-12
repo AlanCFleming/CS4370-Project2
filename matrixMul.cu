@@ -79,18 +79,18 @@ int main(int argc, char *argv[]){
 	float *c = (float *)malloc(sizeof(float) * MATRIXSIZE * MATRIXSIZE ); //resulting matrix
 
 	int init =1325;
-	for (i=0;i<MATRIXSIZE;i++){
-	    for (j=0;j<MATRIXSIZE;j++){
+	for (int i=0;i<MATRIXSIZE;i++){
+	    for (int j=0;j<MATRIXSIZE;j++){
 		init= 3125 * init % 6553;
-		A[i][j]= ( init -1000 ) % 6553;
-		B[i][j]= init % 251;
+		a[i * MATRIXSIZE + j]= ( init -1000 ) % 6553;
+		b[i * MATRIXSIZE + j]= init % 251;
 	    }
 	}
 	
 	//get cpu start time
 	clock_t t1 = clock();
 	//run function
-	mul_matrix_cpu(A, B, C, MATRIXSIZE);
+	mul_matrix_cpu(a, b, c, MATRIXSIZE);
 	//get cpu stop time
 	clock_t t2 = clock();
 	//calculate runtime
@@ -107,8 +107,8 @@ int main(int argc, char *argv[]){
 	cudaMemcpy(dev_b,b, MATRIXSIZE * MATRIXSIZE * sizeof(float),cudaMemcpyHostToDevice);
 
 	//calculate dimensions for gpu
-	dim3 dimBlock(blocksize,blocksize);
-	dim3 dimGrid( ceiling(double(MATRIXSIZE)/dimBlock.x), ceiling(double(MATRIXSIZE) /dimBlock.y));
+	dim3 dimBlock(BLOCKSIZE,BLOCKSIZE);
+	dim3 dimGrid( ceil(double(MATRIXSIZE)/dimBlock.x), ceil(double(MATRIXSIZE) /dimBlock.y));
 
 	//Set up cuda events for recording runtime
 	cudaEvent_t start,stop;
@@ -130,11 +130,11 @@ int main(int argc, char *argv[]){
 	cudaEventDestroy(&stop);
 
 	//copy memory from device
-	cudaMemcpy(d,dev_c, MATRIXSIZE * MATRIXSIZE * sizeof(int),cudaMemcpyDeviceToHost);
+	cudaMemcpy(c,dev_c, MATRIXSIZE * MATRIXSIZE * sizeof(int),cudaMemcpyDeviceToHost);
 
 	//print results
 	printf("CPU Runtime: %f\nGpu Runtime: %f\nSpeedup: %f\n", (cpuTime, gpuTime, (gpuTime / cpuTime)));
 
 	//verify results
-	verify(A,B,C, MATRIXSIZE);
+	verify(a,b,c, MATRIXSIZE);
 }
