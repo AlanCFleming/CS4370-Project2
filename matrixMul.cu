@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <chrono>
 #include <cuda.h>
 //Code written by Alan Fleming
 
@@ -67,6 +68,38 @@ bool verify(float *A, float *B, float *C, int width) {
 	return true;
 }
 
+int main(int argc, char *argv[]){
+	//Check number of arguments
+		if(argc <= 2) {
+		printf("Please supply matrix size and block size");
+		return 1;
+	}
 
+	//assign Matrix and block size
+	const int MATRIXSIZE = atoi(argv[1]);
+	const int BLOCKSIZE = atoi(argv[2]);
 
+	//allocate system memory for array
+	int *a = (int *)malloc(sizeof(int) * MATRIXSIZE * MATRIXSIZE );	//first matrix
+	int *b = (int *)malloc(sizeof(int) * MATRIXSIZE * MATRIXSIZE ); //second matrix
+	int *c = (int *)malloc(sizeof(int) * MATRIXSIZE * MATRIXSIZE ); //resulting matrix
 
+	int init =1325;
+	for (i=0;i<MATRIXSIZE;i++){
+	    for (j=0;j<MATRIXSIZE;j++){
+		init= 3125 * init % 6553;
+		A[i][j]= ( init -1000 ) % 6553;
+		B[i][j]= init % 251;
+	    }
+	}
+	
+	//get cpu start time
+	auto t1 = std::chrono::high_resolution_clock::now();
+	//run function
+	mul_matrix_cpu(A, B, C, MATRIXSIZE);
+	//get cpu stop time
+	auto t2 = std::chrono::high_resolution_clock::now();
+	//calculate runtime
+	double cpuTime = std::chrono::duration_cast<std::chrono::nanoseconds>(a).count(t2 - t1);
+
+}
