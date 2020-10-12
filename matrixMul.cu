@@ -133,7 +133,7 @@ int main(int argc, char *argv[]){
 	cudaMemcpy(c,dev_c, MATRIXSIZE * MATRIXSIZE * sizeof(int),cudaMemcpyDeviceToHost);
 
 	//print results
-	printf("CPU Runtime: %f\nGpu Runtime: %f\nSpeedup: %f\n", (cpuTime, gpuTime, (gpuTime / cpuTime)));
+	printf("CPU Runtime: %f\nGpu Runtime: %f\nSpeedup: %f\n", ((double)cpuTime, (double)gpuTime, double(gpuTime / cpuTime)));
 
 	//verify results
 	verify(a,b,c, MATRIXSIZE);
