@@ -37,13 +37,13 @@ __global__ void mul_matrix_gpu(float *M, float *N, float *P, int width) {
 		ds_M[row  * width + col] = M[row * width + i * blockDim.x + threadIdx.x];
 		ds_N[row * width + col] = N[col + (i * blockDim.x + threadIdx.y) * width];		
 		//ensure all data is copied
-		__synchthreads();
+		__syncthreads();
 		
 		//Preform partial multiplications
 		for(int k = 0; k < blockDim.x; ++k) {
 			Pvalue += ds_M[threadIdx.y][k] * ds_N[k][threadIdx.x];
 		}
-		__synchthreads();
+		__syncthreads();
 	}
 	//Load final product into output memory
 	P[row * width + col] = Pvalue;
