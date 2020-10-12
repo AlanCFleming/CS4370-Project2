@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <math.h>
-#include <chrono>
+#include <time.h>
 #include <cuda.h>
 //Code written by Alan Fleming
 
@@ -94,13 +94,13 @@ int main(int argc, char *argv[]){
 	}
 	
 	//get cpu start time
-	auto t1 = std::chrono::high_resolution_clock::now();
+	clock_t t1 = clock();
 	//run function
 	mul_matrix_cpu(A, B, C, MATRIXSIZE);
 	//get cpu stop time
-	auto t2 = std::chrono::high_resolution_clock::now();
+	clock_t t2 = clock();
 	//calculate runtime
-	double cpuTime = std::chrono::duration_cast<std::chrono::nanoseconds>(a).count(t2 - t1);
+	float cpuTime = (float(t2 - t1)/CLOCKS_PER_SEC*1000;
 
 	//allocate memory on gpu
 	float *dev_a, *dev_b, *dev_c;
