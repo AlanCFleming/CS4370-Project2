@@ -94,7 +94,7 @@ int main(int argc, char *argv[]){
 	//get cpu stop time
 	clock_t t2 = clock();
 	//calculate runtime
-	float cpuTime = (float(t2 - t1)/CLOCKS_PER_SEC*1000;
+	float cpuTime = (float(t2 - t1)/CLOCKS_PER_SEC*1000);
 
 	//allocate memory on gpu
 	float *dev_a, *dev_b, *dev_c;
