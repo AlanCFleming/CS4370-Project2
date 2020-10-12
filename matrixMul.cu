@@ -56,7 +56,7 @@ bool verify(float *A, float *B, float *C, int width) {
 		for(int k = 0; k < width; ++k) {
 			float sum = 0;
 			for(int j = 0; j < width; ++j) {
-				sum += A[threadIdx. * width + j] * B[j * width + k];
+				sum += A[i * width + j] * B[j * width + k];
 			}
 			
 			//get the absolute value of the error for comparison
