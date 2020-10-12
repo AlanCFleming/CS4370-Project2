@@ -80,9 +80,9 @@ int main(int argc, char *argv[]){
 	const int BLOCKSIZE = atoi(argv[2]);
 
 	//allocate system memory for array
-	int *a = (int *)malloc(sizeof(int) * MATRIXSIZE * MATRIXSIZE );	//first matrix
-	int *b = (int *)malloc(sizeof(int) * MATRIXSIZE * MATRIXSIZE ); //second matrix
-	int *c = (int *)malloc(sizeof(int) * MATRIXSIZE * MATRIXSIZE ); //resulting matrix
+	float *a = (float *)malloc(sizeof(float) * MATRIXSIZE * MATRIXSIZE );	//first matrix
+	float *b = (float *)malloc(sizeof(float) * MATRIXSIZE * MATRIXSIZE ); //second matrix
+	float *c = (float *)malloc(sizeof(float) * MATRIXSIZE * MATRIXSIZE ); //resulting matrix
 
 	int init =1325;
 	for (i=0;i<MATRIXSIZE;i++){
@@ -102,4 +102,45 @@ int main(int argc, char *argv[]){
 	//calculate runtime
 	double cpuTime = std::chrono::duration_cast<std::chrono::nanoseconds>(a).count(t2 - t1);
 
+	//allocate memory on gpu
+	float *dev_a, *dev_b, *dev_c;
+	cudaMalloc((void **)(&dev_a),MATRIXSIZE * MATRIXSIZE * sizeof(float));
+	cudaMalloc((void **)(&dev_b),MATRIXSIZE * MATRIXSIZE * sizeof(float));
+	cudaMalloc((void **)(&dev_c),MATRIXSIZE * MATRIXSIZE * sizeof(float));
+
+	//copy matrices to gpu
+	cudaMemcpy(dev_a,a, MATRIXSIZE * MATRIXSIZE * sizeof(float),cudaMemcpyHostToDevice);
+	cudaMemcpy(dev_b,b, MATRIXSIZE * MATRIXSIZE * sizeof(float),cudaMemcpyHostToDevice);
+
+	//calculate dimensions for gpu
+	dim3 dimBlock(blocksize,blocksize);
+	dim3 dimGrid( ceiling(double(MATRIXSIZE)/dimBlock.x), ceiling(double(MATRIXSIZE) /dimBlock.y));
+
+	//Set up cuda events for recording runtime
+	cudaEvent_t start,stop;
+	float gpuTime; 
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
+	cudaEventRecord(start,0);
+
+	// do some work on the GPU
+	mul_matrix_gpu<<<dimGrid, dimBlock>>>(dev_a, dev_b, dev_c, MATRIXSIZE);
+
+	//calculate runtime 
+	cudaEventRecord(stop,0);
+	cudaEventSynchronize(stop);
+	cudaEventElapsedTime(&gpuTime,start,stop);
+
+	//destroy cuda events
+	cudaEventDestroy(&start);
+	cudaEventDestroy(&stop);
+
+	//copy memory from device
+	cudaMemcpy(d,dev_c, MATRIXSIZE * MATRIXSIZE * sizeof(int),cudaMemcpyDeviceToHost);
+
+	//print results
+	printf("CPU Runtime: %f\nGpu Runtime: %f\nSpeedup: %f\n", (cpuTime, gpuTime, (gpuTime / cpuTime)));
+
+	//verify results
+	verify(A,B,C, MATRIXSIZE);
 }
